@@ -1,0 +1,14 @@
+{
+  "Server":{
+    "Port": "25566",
+    "JWTSingedKey": "",
+    "JWTIssuer": ""
+  },
+  "SQL":{
+    "User": "",
+    "Pass": "",
+    "Host": "127.0.0.1",
+    "Port": "3306",
+    "Database": ""
+  }
+}
