@@ -11,6 +11,26 @@ import (
 	"strconv"
 )
 
+type allStruct interface {
+	*models.Userinfo | *models.ApplyFriend | *models.Friend
+}
+
+func jsonUnmarshal[T allStruct](c *gin.Context, data T) {
+	resp, err := c.GetRawData()
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusOK, gin.H{"code": 2, "msg": "Get json failed"})
+		return
+	}
+
+	err = json.Unmarshal(resp, data)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusOK, gin.H{"code": 2, "msg": "Json unmarshal failed."})
+		return
+	}
+}
+
 func RegisterHandler(c *gin.Context) {
 	userInfo := models.Userinfo{}
 	jsonUnmarshal(c, &userInfo)
@@ -128,25 +148,4 @@ func GetFriendListHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 2, "msg": "Success.", "date": list})
-}
-
-/* 学习泛型练手 TODO: 封装为方法*/
-type allStruct interface {
-	*models.Userinfo | *models.ApplyFriend | *models.Friend
-}
-
-func jsonUnmarshal[T allStruct](c *gin.Context, data T) {
-	resp, err := c.GetRawData()
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusOK, gin.H{"code": 2, "msg": "Get json failed"})
-		return
-	}
-
-	err = json.Unmarshal(resp, data)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusOK, gin.H{"code": 2, "msg": "Json unmarshal failed."})
-		return
-	}
 }
