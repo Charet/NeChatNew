@@ -160,10 +160,21 @@ func NewSocketClientHandler(c *gin.Context) {
 	}
 
 	//连接后,在Clients池中注册
-	userID := c.Param("userid")
+	userID, ok := c.Get("UserID")
+	if !ok {
+		err := conn.Close()
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 2, "msg": err})
+			return
+		}
+		log.Println("[controller.go/NewSocketClientHandler/Get]: Don't have userid.")
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 2, "msg": "Don't have userid."})
+		return
+	}
 	newClient := models.Client{Client: conn, Broadcast: make(chan *models.ReceiveMsgType)}
-	models.Clients[userID] = &newClient
+	models.Clients[userID.(string)] = &newClient
 
-	go newClient.ReadIndMsg(userID) //获取消息
-	go newClient.ProcessMsg()       //发送消息
+	go newClient.ReadIndMsg(userID.(string)) //获取消息
+	go newClient.ProcessMsg()                //发送消息
 }

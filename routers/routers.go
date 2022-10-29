@@ -25,7 +25,7 @@ func SetupRouter() *gin.Engine {
 	router.DELETE("/api/accounts/friends", middleware.JwtAuth(), controller.DeleteFriendHandler)       //删除好友
 	router.GET("/api/accounts/friends/:userid", middleware.JwtAuth(), controller.GetFriendListHandler) //获取好友列表
 
-	router.GET("/api/ws/:userid", middleware.JwtAuth(), controller.NewSocketClientHandler)
+	router.GET("/api/ws", middleware.JwtAuth(), controller.NewSocketClientHandler)
 
 	return router
 }
