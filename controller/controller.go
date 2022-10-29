@@ -149,3 +149,21 @@ func GetFriendListHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 2, "msg": "Success.", "date": list})
 }
+
+func NewSocketClientHandler(c *gin.Context) {
+	// 升级ws连接
+	conn, err := models.Upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusOK, gin.H{"code": 2, "msg": err}) //TODO 状态码待修改
+		return
+	}
+
+	//连接后,在Clients池中注册
+	userID := c.Param("userid")
+	newClient := models.Client{Client: conn, Broadcast: make(chan *models.ReceiveMsgType)}
+	models.Clients[userID] = &newClient
+
+	go newClient.ReadIndMsg(userID) //获取消息
+	go newClient.ProcessMsg()       //发送消息
+}
