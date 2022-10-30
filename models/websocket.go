@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
-	"time"
 )
 
 var Upgrader = websocket.Upgrader{
@@ -33,22 +32,19 @@ type ReceiveMsgType struct { //接收信息
 
 // ProcessMsg 获取广播中的消息并发送给对应连接
 func (c *Client) ProcessMsg() {
-	for {
-		select {
-		case data := <-c.Broadcast:
-			toClient := Clients[data.To]
-			err := toClient.Client.WriteJSON(gin.H{"from": data.From, "content": data.Content})
-			// TODO 聊天内容存储到数据库中
-			if err != nil {
-				log.Println("[Models/websocket.go/ProcessMsg/WriteJSON]: ", err)
-			}
-		default:
-			time.Sleep(time.Second * 1)
+	defer log.Println("[websocket.go/ProcessMsg]: Goroutine Closed.")
+	for data := range c.Broadcast {
+		toClient := Clients[data.To]
+		err := toClient.Client.WriteJSON(gin.H{"from": data.From, "content": data.Content})
+		// TODO 聊天内容存储到数据库中
+		if err != nil {
+			log.Println("[Models/websocket.go/ProcessMsg/WriteJSON]: ", err)
 		}
 	}
 }
 
 func (c *Client) ReadIndMsg(userID string) {
+	defer log.Println("[websocket.go/ReadIndMsg]: Goroutine Closed.")
 	for {
 		log.Println("[Models/websocket.go/ReadIndMsg]: User Connected, Reading Message.")
 		_, msg, err := c.Client.ReadMessage()

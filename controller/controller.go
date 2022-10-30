@@ -124,10 +124,16 @@ func ApplyFriendHandler(c *gin.Context) {
 }
 
 func DeleteFriendHandler(c *gin.Context) {
+	var err error
 	friend := models.Friend{}
-	jsonUnmarshal(c, &friend)
+	friend.FriendID, err = strconv.Atoi(c.Param("friendId"))
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 2, "msg": err})
+		return
+	}
 
-	err := models.DeleteFriend(&friend)
+	err = models.DeleteFriend(&friend)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 2, "msg": err})
 		return
@@ -160,7 +166,9 @@ func NewSocketClientHandler(c *gin.Context) {
 	}
 
 	//连接后,在Clients池中注册
-	userID, ok := c.Get("UserID")
+	userIDAny, ok := c.Get("UserID")
+	userID := strconv.Itoa(userIDAny.(int))
+
 	if !ok {
 		err := conn.Close()
 		if err != nil {
@@ -173,8 +181,8 @@ func NewSocketClientHandler(c *gin.Context) {
 		return
 	}
 	newClient := models.Client{Client: conn, Broadcast: make(chan *models.ReceiveMsgType)}
-	models.Clients[userID.(string)] = &newClient
+	models.Clients[userID] = &newClient
 
-	go newClient.ReadIndMsg(userID.(string)) //获取消息
-	go newClient.ProcessMsg()                //发送消息
+	go newClient.ReadIndMsg(userID) //获取消息
+	go newClient.ProcessMsg()       //发送消息
 }

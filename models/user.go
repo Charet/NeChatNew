@@ -26,10 +26,9 @@ func SaveUserInfo(userInfo *Userinfo) error {
 // GetUserID 通过用户名以及加密后的密码查找用户ID
 func GetUserID(userInfo *Userinfo) error {
 	sqlStr := "SELECT user_id FROM user_info WHERE username = ? AND crypto_password = ?"
-	err := dao.DB.Get(userInfo.UserID, sqlStr, userInfo.Username, userInfo.CryptoPassword)
-	//err := dao.DB.QueryRow(sqlStr, userInfo.Username, userInfo.Password).Scan(&userInfo.UserID)
+	err := dao.DB.Get(&userInfo.UserID, sqlStr, userInfo.Username, userInfo.CryptoPassword)
 	if err != nil {
-		log.Println(err)
+		log.Println("[models/user.go/GetUserID/Get]: ", err)
 		return err
 	}
 	return nil

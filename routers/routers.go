@@ -21,9 +21,9 @@ func SetupRouter() *gin.Engine {
 	router.POST("/api/accounts/friend-requests", middleware.JwtAuth(), controller.ApplyFriendHandler)              //同意好友申请
 
 	/*好友*/
-	router.POST("/api/accounts/friends", middleware.JwtAuth(), controller.AddFriendHandler)            //添加好友
-	router.DELETE("/api/accounts/friends", middleware.JwtAuth(), controller.DeleteFriendHandler)       //删除好友
-	router.GET("/api/accounts/friends/:userid", middleware.JwtAuth(), controller.GetFriendListHandler) //获取好友列表
+	router.POST("/api/accounts/friends", middleware.JwtAuth(), controller.AddFriendHandler)                //添加好友
+	router.DELETE("/api/accounts/friends/:friendId", middleware.JwtAuth(), controller.DeleteFriendHandler) //删除好友
+	router.GET("/api/accounts/friends/:userid", middleware.JwtAuth(), controller.GetFriendListHandler)     //获取好友列表
 
 	router.GET("/api/ws", middleware.JwtAuth(), controller.NewSocketClientHandler)
 
