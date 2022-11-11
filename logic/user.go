@@ -12,6 +12,7 @@ import (
 	"golang.org/x/crypto/argon2"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -34,6 +35,7 @@ func Register(userInfo *models.Userinfo) (int, gin.H) {
 		if err != nil {
 			return http.StatusInternalServerError, gin.H{"code": 2, "msg": "Generate TOKEN failed."}
 		}
+		models.RegisterToken(strconv.Itoa(userInfo.UserID), token)
 		return http.StatusCreated, gin.H{"code": 0, "msg": "Register success.", "uid": userInfo.UserID, "token": token}
 	} else {
 		return http.StatusNotAcceptable, gin.H{"code": 1101, "msg": "Username or password is invalid."}
@@ -152,6 +154,7 @@ func Login(userInfo *models.Userinfo) (int, gin.H) {
 		if err != nil {
 			return http.StatusInternalServerError, gin.H{"code": 2, "msg": "Generate TOKEN failed."}
 		}
+		models.RegisterToken(strconv.Itoa(userInfo.UserID), token)
 		return http.StatusOK, gin.H{"code": 0, "msg": "Login Success.", "token": token, "Username": trueUserInfo.Username, "HaveMessage": have}
 	} else {
 		return http.StatusInternalServerError, gin.H{"code": 2, "msg": "UserID or Password is wrong."}

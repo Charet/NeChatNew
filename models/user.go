@@ -2,6 +2,7 @@ package models
 
 import (
 	"NechatService/dao"
+	"database/sql"
 	"log"
 )
 
@@ -45,6 +46,7 @@ func GetUserInfoByID(userInfo *Userinfo) error {
 	return nil
 }
 
+// DeleteAccount 通过用户ID删除用户
 func DeleteAccount(userID int) error {
 	sqlStr := "DELETE FROM user_info WHERE user_id=?"
 	_, err := dao.DB.Exec(sqlStr, userID)
@@ -53,4 +55,21 @@ func DeleteAccount(userID int) error {
 		return err
 	}
 	return nil
+}
+
+// HaveUser 通过用户ID查询用户是否存在
+func HaveUser(userID int) (bool, error) {
+	sqlStr := "SELECT * FROM user_info WHERE user_id = ?"
+	userInfo := Userinfo{}
+	err := dao.DB.Get(&userInfo, sqlStr, userID)
+	if err != nil {
+		if err == sql.ErrNoRows { //查询不到
+			return false, nil
+		} else {
+			log.Println(err)
+			return false, nil
+		}
+	}
+
+	return true, nil
 }

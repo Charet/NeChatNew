@@ -11,9 +11,10 @@ func SetupRouter() *gin.Engine {
 	router.Use(middleware.Cors())
 
 	/*用户处理*/
-	router.POST("/api/accounts", controller.RegisterHandler)                              //注册
-	router.GET("/api/accounts/:userid/:password", controller.LoginHandler)                //登录
-	router.DELETE("/api/accounts", middleware.JwtAuth(), controller.DeleteAccountHandler) //注销
+	router.POST("/api/accounts", controller.RegisterHandler)                                     //注册
+	router.GET("/api/accounts/:userid/:password", controller.LoginHandler)                       //登录
+	router.DELETE("/api/accounts", middleware.JwtAuth(), controller.DeleteAccountHandler)        //注销
+	router.DELETE("/api/accounts/tokens", middleware.JwtAuth(), controller.LogoutAccountHandler) //退出登录
 
 	/*好友申请*/
 	router.GET("/api/accounts/friend-requests", middleware.JwtAuth(), controller.GetApplyFriendListHandler)        //获取好友申请列表

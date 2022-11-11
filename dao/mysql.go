@@ -14,7 +14,7 @@ func InitSQL() {
 	dataSourceName := config.ServerConfig.SQL.User + ":" + config.ServerConfig.SQL.Pass + "@tcp(" + config.ServerConfig.SQL.Host + ":" + config.ServerConfig.SQL.Port + ")/" + config.ServerConfig.SQL.Database + "?charset=utf8mb4&parseTime=True"
 	DB, err = sqlx.Connect("mysql", dataSourceName)
 	if err != nil {
-		fmt.Println("[ERROR]Try to connect failed,", err)
+		fmt.Println("[ERROR]Connect to mysql failed,", err)
 	}
 	DB.SetConnMaxLifetime(-1)
 }

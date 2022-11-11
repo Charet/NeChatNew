@@ -11,7 +11,7 @@ func main() {
 	config.InitConfig()
 	//gin.SetMode(gin.ReleaseMode) //release mode on
 	dao.InitSQL()
-	//go logic.WsStart()
+	dao.InitRedis()
 
 	router := routers.SetupRouter()
 	err := router.Run(":" + config.ServerConfig.Server.Port)

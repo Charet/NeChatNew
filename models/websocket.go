@@ -21,7 +21,6 @@ var Clients = make(map[string]*Client) //用户连接池
 type Client struct { //用户连接
 	Client    *websocket.Conn
 	Broadcast chan *ReceiveMsgType
-	Status    chan bool
 }
 
 type ReceiveMsgType struct { //接收信息

@@ -67,6 +67,22 @@ func DeleteAccountHandler(c *gin.Context) {
 	}
 }
 
+func LogoutAccountHandler(c *gin.Context) {
+	userID, ok := c.Get("UserID")
+	if !ok {
+		log.Println("[ERROR]Handler var get failed.")
+		c.JSON(http.StatusOK, gin.H{"code": 2, "msg": "Server Error"})
+		return
+	}
+
+	err := models.LogoutToken(strconv.Itoa(userID.(int)))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 2, "msg": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "Logout Success."})
+}
+
 func AddFriendHandler(c *gin.Context) {
 	applyFriend := models.ApplyFriend{}
 	jsonUnmarshal(c, &applyFriend)
@@ -78,12 +94,20 @@ func AddFriendHandler(c *gin.Context) {
 	}
 	applyFriend.SenderID = SenderID.(int)
 
-	err := models.SaveApplyFriend(&applyFriend)
+	yes, err := models.HaveUser(applyFriend.ReceiverID) //查询被加人是否存在
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 2, "msg": err})
+		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success"})
+	if yes {
+		err = models.SaveApplyFriend(&applyFriend)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 2, "msg": err})
+		}
+		c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success"})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 1, "msg": "Don't have user."})
+	}
 }
 
 func GetApplyFriendListHandler(c *gin.Context) {

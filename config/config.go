@@ -10,8 +10,9 @@ import (
 var ServerConfig = Config{}
 
 type Config struct {
-	Server Server `json:"server"`
+	Server Server `json:"Server"`
 	SQL    SQL    `json:"SQL"`
+	Redis  Redis  `json:"Redis"`
 }
 
 type Server struct {
@@ -26,6 +27,10 @@ type SQL struct {
 	Host     string `json:"Host"`
 	Port     string `json:"Port"`
 	Database string `json:"Database"`
+}
+type Redis struct {
+	Host string `json:"Host"`
+	Port string `json:"Port"`
 }
 
 func InitConfig() {
